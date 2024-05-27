@@ -256,11 +256,11 @@ class MainWindow(QMainWindow):
     def createToolbar(self):
         toolbar = self.addToolBar('Toolbar')
 
-        rectAction = QAction('Rechteck', self)
+        rectAction = QAction('Rectangle', self)
         rectAction.triggered.connect(self.setRectangleMode)
         toolbar.addAction(rectAction)
 
-        circleAction = QAction('Kreis', self)
+        circleAction = QAction('Circle', self)
         circleAction.triggered.connect(self.setCircleMode)
         toolbar.addAction(circleAction)
 
@@ -280,11 +280,11 @@ class MainWindow(QMainWindow):
         zoomOutAction.triggered.connect(self.drawingWidget.zoomOut)
         toolbar.addAction(zoomOutAction)
 
-        color1PickerAction = QAction('FÜllung', self)
+        color1PickerAction = QAction('Fill', self)
         color1PickerAction.triggered.connect(self.openColorPicker1)
         toolbar.addAction(color1PickerAction)
         
-        color2PickerAction = QAction('Rand', self)
+        color2PickerAction = QAction('Border', self)
         color2PickerAction.triggered.connect(self.openColorPicker2)
         toolbar.addAction(color2PickerAction)
 
