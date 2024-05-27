@@ -177,19 +177,73 @@ class MainWindow(QMainWindow):
     def createMenu(self):
         menubar = self.menuBar()
 
-        fileMenu = menubar.addMenu('Programm')
-
-        exitAction = QAction('Beenden', self)
+        fileMenu = menubar.addMenu('Program')
+        exitAction = QAction('Quit', self)
         exitAction.triggered.connect(self.close)
         fileMenu.addAction(exitAction)
         
-        fileMenu = menubar.addMenu('Datei')
-
-        exitAction = QAction('Speichern', self)
-        # exitAction.triggered.connect(self.close)
+        fileMenu = menubar.addMenu('File')
+        exitAction = QAction('Save', self)
+        # exitAction.triggered.connect(self.save)
         fileMenu.addAction(exitAction)
-        exitAction = QAction('Verwerfen', self)
-        # exitAction.triggered.connect(self.close)
+        exitAction = QAction('Save as...', self)
+        # exitAction.triggered.connect(self.save)
+        fileMenu.addAction(exitAction)
+        exitAction = QAction('Discard', self)
+        # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+
+        fileMenu = menubar.addMenu('Edit')
+        exitAction = QAction('Discard', self)
+        # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+
+        fileMenu = menubar.addMenu('Image')
+        exitAction = QAction('No images found.', self)
+        # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+        
+        fileMenu = menubar.addMenu('Layer')
+        exitAction = QAction('No layers available.', self)
+        # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+        
+        fileMenu = menubar.addMenu('Type')
+        exitAction = QAction("I don't got no type", self)
+        # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+        exitAction = QAction("Bad bitches is the only thing that I like", self)
+        # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+        
+        fileMenu = menubar.addMenu('Select')
+        exitAction = QAction('No selection available.', self)
+        # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+        
+        fileMenu = menubar.addMenu('Filter')
+        exitAction = QAction('#NoFilter', self)
+        # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+        
+        fileMenu = menubar.addMenu('3D')
+        exitAction = QAction('Imagine I could do that lol', self)
+        # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+        
+        fileMenu = menubar.addMenu('View')
+        exitAction = QAction('Look at the screen', self)
+        # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+        
+        fileMenu = menubar.addMenu('Window')
+        exitAction = QAction('???', self)
+        # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+        
+        fileMenu = menubar.addMenu('Help')
+        exitAction = QAction('There is no help.', self)
+        # exitAction.triggered.connect(self.discard)
         fileMenu.addAction(exitAction)
 
     def createToolbar(self):
@@ -203,13 +257,13 @@ class MainWindow(QMainWindow):
         circleAction.triggered.connect(self.setCircleMode)
         toolbar.addAction(circleAction)
 
-        testScene1Action = QAction('Testszene 1', self)
-        testScene1Action.triggered.connect(self.testScene1)
-        toolbar.addAction(testScene1Action)
+        # testScene1Action = QAction('Testszene 1', self)
+        # testScene1Action.triggered.connect(self.testScene1)
+        # toolbar.addAction(testScene1Action)
 
-        testScene2Action = QAction('Testszene 2', self)
-        testScene2Action.triggered.connect(self.testScene2)
-        toolbar.addAction(testScene2Action)
+        # testScene2Action = QAction('Testszene 2', self)
+        # testScene2Action.triggered.connect(self.testScene2)
+        # toolbar.addAction(testScene2Action)
 
         zoomInAction = QAction('Zoom In', self)
         zoomInAction.triggered.connect(self.drawingWidget.zoomIn)
