@@ -178,9 +178,6 @@ class MainWindow(QMainWindow):
         menubar = self.menuBar()
 
         fileMenu = menubar.addMenu('Program')
-        exitAction = QAction('Quit', self)
-        exitAction.triggered.connect(self.close)
-        fileMenu.addAction(exitAction)
         
         fileMenu = menubar.addMenu('File')
         exitAction = QAction('New', self)
@@ -198,6 +195,10 @@ class MainWindow(QMainWindow):
         fileMenu.addAction(exitAction)
         exitAction = QAction('Discard', self)
         # exitAction.triggered.connect(self.discard)
+        fileMenu.addAction(exitAction)
+        fileMenu.addSeparator()
+        exitAction = QAction('End (my life)', self)
+        exitAction.triggered.connect(self.close)
         fileMenu.addAction(exitAction)
 
         fileMenu = menubar.addMenu('Edit')
