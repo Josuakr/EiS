@@ -183,6 +183,13 @@ class MainWindow(QMainWindow):
         fileMenu.addAction(exitAction)
         
         fileMenu = menubar.addMenu('File')
+        exitAction = QAction('New', self)
+        # exitAction.triggered.connect(self.save)
+        fileMenu.addAction(exitAction)
+        exitAction = QAction('Open', self)
+        # exitAction.triggered.connect(self.save)
+        fileMenu.addAction(exitAction)
+        fileMenu.addSeparator()
         exitAction = QAction('Save', self)
         # exitAction.triggered.connect(self.save)
         fileMenu.addAction(exitAction)
