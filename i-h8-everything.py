@@ -1,3 +1,5 @@
+# bitte auch neben der Toolbar auch die schöne Menu Bar beachten, gracias.
+
 import sys
 import math
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QAction, QColorDialog
@@ -210,9 +212,6 @@ class MainWindow(QMainWindow):
         self.createMenu()
         self.createToolbar()
 
-        # Eingabeelemente für neue Primitive
-        self.createPrimitiveInputs()
-
         # Tastenkombinationen
         self.createShortcuts()
 
@@ -231,6 +230,9 @@ class MainWindow(QMainWindow):
         # exitAction.triggered.connect(self.save)
         fileMenu.addAction(exitAction)
         exitAction = QAction('Open', self)
+        # exitAction.triggered.connect(self.save)
+        fileMenu.addAction(exitAction)
+        exitAction = QAction('Open recent...', self)
         # exitAction.triggered.connect(self.save)
         fileMenu.addAction(exitAction)
         fileMenu.addSeparator()
@@ -351,10 +353,6 @@ class MainWindow(QMainWindow):
         if color2.isValid():
             # print("Selected color:", color2.name())
             self.drawingWidget.color2 = color2
-
-    def createPrimitiveInputs(self):
-        # Eingabeelemente für die einfachere Variante
-        pass
 
     def createShortcuts(self):
         zoomInShortcut = QAction('Zoom In', self)
