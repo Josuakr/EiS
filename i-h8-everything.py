@@ -177,10 +177,19 @@ class MainWindow(QMainWindow):
     def createMenu(self):
         menubar = self.menuBar()
 
-        fileMenu = menubar.addMenu('Datei')
+        fileMenu = menubar.addMenu('Programm')
 
         exitAction = QAction('Beenden', self)
         exitAction.triggered.connect(self.close)
+        fileMenu.addAction(exitAction)
+        
+        fileMenu = menubar.addMenu('Datei')
+
+        exitAction = QAction('Speichern', self)
+        # exitAction.triggered.connect(self.close)
+        fileMenu.addAction(exitAction)
+        exitAction = QAction('Verwerfen', self)
+        # exitAction.triggered.connect(self.close)
         fileMenu.addAction(exitAction)
 
     def createToolbar(self):
