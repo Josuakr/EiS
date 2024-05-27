@@ -1,7 +1,8 @@
 import sys
+import math
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QAction, QColorDialog
-from PyQt5.QtGui import QPainter, QBrush, QPen, QColor, QKeySequence, QWheelEvent
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter, QBrush, QPen, QColor, QKeySequence, QWheelEvent, QPolygon
+from PyQt5.QtCore import Qt, QPoint
 
 class Shape:
     def __init__(self, fill_color, border_color):
@@ -23,6 +24,15 @@ class Circle(Shape):
         self.center_y = center_y
         self.radius = radius
 
+class Star(Shape):
+    def __init__(self, x, y, points, inner_radius, outer_radius, fill_color, border_color):
+        super().__init__(fill_color, border_color)
+        self.x = x
+        self.y = y
+        self.points = points
+        self.inner_radius = inner_radius
+        self.outer_radius = outer_radius
+
 class Drawing:
     def __init__(self):
         self.shapes = []
@@ -39,7 +49,11 @@ class DrawingWidget(QWidget):
         self.drawing_mode = None
         self.shift_pressed = False
         self.color1 = 'blue'
+        self.color1Cache = None
         self.color2 = 'black'
+        self.hollowDrawing = False
+        self.starPointCount = 8
+        self.experimental = 2
 
     def initUI(self):
         self.setGeometry(0, 0, 800, 600)
@@ -64,6 +78,8 @@ class DrawingWidget(QWidget):
                 painter.drawRect(int(shape.x), int(shape.y), int(shape.width), int(shape.height))
             elif isinstance(shape, Circle):
                 painter.drawEllipse(int(shape.center_x - shape.radius), int(shape.center_y - shape.radius), int(shape.radius * 2), int(shape.radius * 2))
+            elif isinstance(shape, Star):
+                self.drawStar(painter, shape)
 
         if self.current_shape:
             painter.setBrush(QBrush(self.current_shape.fill_color, Qt.SolidPattern))
@@ -72,12 +88,32 @@ class DrawingWidget(QWidget):
                 painter.drawRect(int(self.current_shape.x), int(self.current_shape.y), int(self.current_shape.width), int(self.current_shape.height))
             elif isinstance(self.current_shape, Circle):
                 painter.drawEllipse(int(self.current_shape.center_x - self.current_shape.radius), int(self.current_shape.center_y - self.current_shape.radius), int(self.current_shape.radius * 2), int(self.current_shape.radius * 2))
+            elif isinstance(self.current_shape, Star):
+                self.drawStar(painter, self.current_shape)
+
+    def drawStar(self, painter, star):
+        points = []
+        angle = self.experimental * math.pi / star.points
+        for i in range(star.points * 2):
+            r = star.outer_radius if i % 2 == 0 else star.inner_radius
+            theta = i * angle / 2
+            x = star.x + r * math.cos(theta)
+            y = star.y + r * math.sin(theta)
+            points.append(QPoint(int(x), int(y)))
+
+        star_polygon = QPolygon(points)
+        painter.drawPolygon(star_polygon)
 
     def mousePressEvent(self, event):
+        if self.hollowDrawing:
+            self.color1Cache = self.color1
+            self.color1 = 'transparent'
         if self.drawing_mode == 'rectangle':
             self.current_shape = Rectangle(event.x() / self.zoom_factor - self.offset_x, event.y() / self.zoom_factor - self.offset_y, 0, 0, QColor(self.color1), QColor(self.color2))
         elif self.drawing_mode == 'circle':
             self.current_shape = Circle(event.x() / self.zoom_factor - self.offset_x, event.y() / self.zoom_factor - self.offset_y, 0, QColor(self.color1), QColor(self.color2))
+        elif self.drawing_mode == 'star':
+            self.current_shape = Star(event.x() / self.zoom_factor - self.offset_x, event.y() / self.zoom_factor - self.offset_y, self.starPointCount, 0, 0, QColor(self.color1), QColor(self.color2))  # Assuming a 5-point star initially
         self.last_mouse_pos = event.pos()
 
     def mouseMoveEvent(self, event):
@@ -89,6 +125,12 @@ class DrawingWidget(QWidget):
             dx = (event.x() / self.zoom_factor - self.offset_x) - self.current_shape.center_x
             dy = (event.y() / self.zoom_factor - self.offset_y) - self.current_shape.center_y
             self.current_shape.radius = (dx ** 2 + dy ** 2) ** 0.5
+            self.update()
+        elif self.drawing_mode == 'star' and self.current_shape:
+            dx = (event.x() / self.zoom_factor - self.offset_x) - self.current_shape.x
+            dy = (event.y() / self.zoom_factor - self.offset_y) - self.current_shape.y
+            self.current_shape.outer_radius = (dx ** 2 + dy ** 2) ** 0.5
+            self.current_shape.inner_radius = self.current_shape.outer_radius / 2 
             self.update()
 
     def mouseReleaseEvent(self, event):
@@ -177,6 +219,8 @@ class MainWindow(QMainWindow):
     def createMenu(self):
         menubar = self.menuBar()
 
+        # das hier ist unnötig weil unter dem Menü "Python" kann man auch einfach auf Quit Python klicken aber die Aufgabe verlangt das hier ja.
+        # oder CMD + Q
         fileMenu = menubar.addMenu('Program')
         exitAction = QAction('End (my life)', self)
         exitAction.triggered.connect(self.close)
@@ -264,13 +308,17 @@ class MainWindow(QMainWindow):
         circleAction.triggered.connect(self.setCircleMode)
         toolbar.addAction(circleAction)
 
-        # testScene1Action = QAction('Testszene 1', self)
-        # testScene1Action.triggered.connect(self.testScene1)
-        # toolbar.addAction(testScene1Action)
+        starAction = QAction('Star', self)
+        starAction.triggered.connect(self.setStarMode)
+        toolbar.addAction(starAction)
+        
+        testScene1Action = QAction('Testscene 1', self)
+        testScene1Action.triggered.connect(self.testScene1)
+        toolbar.addAction(testScene1Action)
 
-        # testScene2Action = QAction('Testszene 2', self)
-        # testScene2Action.triggered.connect(self.testScene2)
-        # toolbar.addAction(testScene2Action)
+        testScene2Action = QAction('Testscene 2', self)
+        testScene2Action.triggered.connect(self.testScene2)
+        toolbar.addAction(testScene2Action)
 
         zoomInAction = QAction('Zoom In', self)
         zoomInAction.triggered.connect(self.drawingWidget.zoomIn)
@@ -287,6 +335,10 @@ class MainWindow(QMainWindow):
         color2PickerAction = QAction('Border', self)
         color2PickerAction.triggered.connect(self.openColorPicker2)
         toolbar.addAction(color2PickerAction)
+
+        hollow = QAction('Hollow', self, checkable = True)
+        hollow.triggered.connect(self.isHollow)
+        toolbar.addAction(hollow)
 
     def openColorPicker1(self):
         color1 = QColorDialog.getColor()
@@ -321,6 +373,9 @@ class MainWindow(QMainWindow):
     def setCircleMode(self):
         self.drawingWidget.drawing_mode = 'circle'
 
+    def setStarMode(self):
+        self.drawingWidget.drawing_mode = 'star'
+
     def testScene1(self):
         self.drawingWidget.drawing = Drawing()
         self.drawingWidget.drawing.add_shape(Rectangle(100, 100, 200, 150, QColor('red'), QColor('black')))
@@ -332,6 +387,13 @@ class MainWindow(QMainWindow):
         self.drawingWidget.drawing.add_shape(Rectangle(50, 50, 100, 200, QColor('blue'), QColor('black')))
         self.drawingWidget.drawing.add_shape(Rectangle(200, 200, 150, 100, QColor('yellow'), QColor('black')))
         self.drawingWidget.update()
+
+    def isHollow(self):
+        if self.drawingWidget.hollowDrawing:
+            self.drawingWidget.hollowDrawing = False
+            self.drawingWidget.color1 = self.drawingWidget.color1Cache
+        else:
+            self.drawingWidget.hollowDrawing = True
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
