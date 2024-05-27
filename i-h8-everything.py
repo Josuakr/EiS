@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QAction
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QAction, QColorDialog
 from PyQt5.QtGui import QPainter, QBrush, QPen, QColor, QKeySequence, QWheelEvent
 from PyQt5.QtCore import Qt
 
@@ -37,6 +37,9 @@ class DrawingWidget(QWidget):
         self.initUI()
         self.current_shape = None
         self.drawing_mode = None
+        self.shift_pressed = False
+        self.color1 = 'blue'
+        self.color2 = 'black'
 
     def initUI(self):
         self.setGeometry(0, 0, 800, 600)
@@ -72,9 +75,9 @@ class DrawingWidget(QWidget):
 
     def mousePressEvent(self, event):
         if self.drawing_mode == 'rectangle':
-            self.current_shape = Rectangle(event.x() / self.zoom_factor - self.offset_x, event.y() / self.zoom_factor - self.offset_y, 0, 0, QColor('blue'), QColor('black'))
+            self.current_shape = Rectangle(event.x() / self.zoom_factor - self.offset_x, event.y() / self.zoom_factor - self.offset_y, 0, 0, QColor(self.color1), QColor(self.color2))
         elif self.drawing_mode == 'circle':
-            self.current_shape = Circle(event.x() / self.zoom_factor - self.offset_x, event.y() / self.zoom_factor - self.offset_y, 0, QColor('blue'), QColor('black'))
+            self.current_shape = Circle(event.x() / self.zoom_factor - self.offset_x, event.y() / self.zoom_factor - self.offset_y, 0, QColor(self.color1), QColor(self.color2))
         self.last_mouse_pos = event.pos()
 
     def mouseMoveEvent(self, event):
@@ -150,7 +153,7 @@ class DrawingWidget(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Vektororientiertes Zeichenprogramm')
+        self.setWindowTitle('Kill Me')
         self.setGeometry(100, 100, 800, 600)
 
         self.centralWidget = QWidget()
@@ -206,6 +209,26 @@ class MainWindow(QMainWindow):
         zoomOutAction = QAction('Zoom Out', self)
         zoomOutAction.triggered.connect(self.drawingWidget.zoomOut)
         toolbar.addAction(zoomOutAction)
+
+        color1PickerAction = QAction('FÜllung', self)
+        color1PickerAction.triggered.connect(self.openColorPicker1)
+        toolbar.addAction(color1PickerAction)
+        
+        color2PickerAction = QAction('Rand', self)
+        color2PickerAction.triggered.connect(self.openColorPicker2)
+        toolbar.addAction(color2PickerAction)
+
+    def openColorPicker1(self):
+        color1 = QColorDialog.getColor()
+        if color1.isValid():
+            # print("Selected color:", color1.name())
+            self.drawingWidget.color1 = color1
+    
+    def openColorPicker2(self):
+        color2 = QColorDialog.getColor()
+        if color2.isValid():
+            # print("Selected color:", color2.name())
+            self.drawingWidget.color2 = color2
 
     def createPrimitiveInputs(self):
         # Eingabeelemente für die einfachere Variante
